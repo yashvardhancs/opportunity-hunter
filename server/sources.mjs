@@ -156,7 +156,7 @@ const webSearch = {
   configured: () => !!(env('TAVILY_API_KEY') || env('SERPER_API_KEY')),
   async search(intent) {
     const results = [];
-    for (const q of intent.ecosystemQueries.slice(0, 5)) {
+    for (const q of intent.ecosystemQueries.slice(0, 7)) {
       let items = [];
       if (env('TAVILY_API_KEY')) {
         const r = await http('https://api.tavily.com/search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ api_key: env('TAVILY_API_KEY'), query: q.query, max_results: 4 }) });
@@ -181,7 +181,9 @@ const webSearch = {
 // ---------------- IMPORTED: freelancer lead spreadsheets (local, git-ignored) ----------------
 // Built by `npm run import:leads` → data/private/leads.json. Contact data is the user's own purchased research: verify before outreach.
 const COUNTRY_ALIASES = { 'united arab emirates': ['uae', 'dubai', 'abu dhabi'], 'united states': ['usa', 'us', 'new york', 'san francisco'], 'united kingdom': ['uk', 'london'], netherlands: ['amsterdam', 'nl'], india: ['mangalore', 'bangalore', 'bengaluru'], singapore: ['sg'] };
-const leadsFile = new URL('../data/private/leads.json', import.meta.url);
+const privateLeads = new URL('../data/private/leads.json', import.meta.url);
+const publicLeads = new URL('../data/leads_companies.json', import.meta.url); // company-only, safe to commit
+const leadsFile = fs.existsSync(privateLeads) ? privateLeads : publicLeads;
 const freelancerLeads = {
   id: 'freelancer_leads', name: 'Freelancer lead reports (Excel)', app: 'Imported spreadsheets', ecosystem: 'Human research', weight: 9,
   configured: () => fs.existsSync(leadsFile),

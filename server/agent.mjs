@@ -49,6 +49,7 @@ export function planSearches(intent) {
     { ecosystem: 'Trading ecosystem', query: `quant trading firms market makers ${L} careers` },
     { ecosystem: 'VC portfolio', query: `${L} ${intent.categories.join(' ')} startups VC portfolio hiring engineers` },
     { ecosystem: 'Hackathon sponsors', query: `${L} hackathon 2026 sponsors ${intent.skills[0]}` },
+    ...(/dubai|uae|emirates/i.test(`${L} ${intent.country}`) ? [{ ecosystem: 'DMCC directory', query: `site:dmcc.ae business directory ${intent.categories[0]} company` }, { ecosystem: 'DMCC crypto centre', query: `DMCC Crypto Centre member companies ${intent.categories.join(' ')}` }] : []),
     { ecosystem: 'X / Twitter', query: `site:x.com "hiring" ${intent.skills[0]} ${L}` },
   ];
   const plan = [
