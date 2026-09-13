@@ -147,8 +147,9 @@ OH_OFFLINE=1 npm test    # offline only
 | 11 | 💰 **VC portfolios and accelerators** | Web search | Funded startups that are hiring | 🔑 search key |
 | 12 | 🏆 **Hackathon sponsors** | Web search | Companies sponsoring developer events | 🔑 search key |
 | 13 | 𝕏 **X / Twitter hiring posts** | Web search (`site:x.com`) | Public hiring announcements | 🔑 search key |
-| 14 | 🇦🇪 **Business directories** (DMCC, Singapore registry, Companies House, KvK) | Official data or APIs, where the terms allow | Registered companies by city | 🗓️ Roadmap |
-| 15 | 👤 **People** | Lead reports and public pages; LinkedIn search opens **in your browser** | Founder, CTO, recruiter | ✅ Human in the loop |
+| 14 | 🇦🇪 **DMCC directory (Dubai)** | Web search on `site:dmcc.ae` + DMCC Crypto Centre searches (added automatically for Dubai/UAE requests); DMCC Excel exports via `import:leads` | DMCC-registered companies by category | 🔑 search key / ✅ import |
+| 15 | 🏛️ **Other business registries** (Singapore data.gov.sg, Companies House, KvK) | Official data or APIs | Registered companies by city | 🗓️ Roadmap |
+| 16 | 👤 **People** | Lead reports and public pages; LinkedIn search opens **in your browser** | Founder, CTO, recruiter | ✅ Human in the loop |
 
 Sources are pluggable: add one object to `LIVE_SOURCES` in [`server/sources.mjs`](server/sources.mjs) (`{ id, app, weight, configured(), search(intent) }`).
 
