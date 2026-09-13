@@ -156,7 +156,9 @@ Dev with hot reload: `npm start` in one terminal, `npm run dev:web` in another �
 See [.env.example](.env.example): `TAVILY_API_KEY` / `SERPER_API_KEY`, `GOOGLE_MAPS_API_KEY`, `GOOGLE_SHEET_ID`, `GOOGLE_SHEET_TAB`, `GOOGLE_SERVICE_ACCOUNT_FILE`, `GITHUB_TOKEN`, `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `OH_FORCE_FAIL`, `PORT`.
 
 ## 13. Screenshots
-Put them in `screenshots/`: `console.png` (live trace), `opportunities.png`, `company.png`, `sources.png`, `sheets.png`.
+![Agent Console](screenshots/console.png)
+
+To add: `console-run.png` (live trace), `opportunities.png`, `company.png`, `sources.png`, `sheets.png`.
 
 ## 14. Roadmap
 - Extract company names from career-fair PDFs (download → text → named-entity extraction)
