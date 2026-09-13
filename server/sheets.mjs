@@ -28,6 +28,33 @@ async function accessToken(sa) {
   return r.body.access_token;
 }
 
+// Styles the sheet: dark bold frozen header, filter, score colour scale, column widths, wrapped "why", status dropdown.
+async function formatSheet(id, tab, auth) {
+  const meta = await http(`https://sheets.googleapis.com/v4/spreadsheets/${id}?fields=sheets(properties(sheetId,title),bandedRanges)`, { headers: auth });
+  const sheet = meta.body?.sheets?.find((s) => s.properties.title === tab);
+  if (!sheet) throw new Error('tab not found');
+  const sheetId = sheet.properties.sheetId;
+  const col = (i) => ({ sheetId, startColumnIndex: i, endColumnIndex: i + 1, startRowIndex: 1 });
+  const rgb = (h) => ({ red: parseInt(h.slice(0, 2), 16) / 255, green: parseInt(h.slice(2, 4), 16) / 255, blue: parseInt(h.slice(4, 6), 16) / 255 });
+  const width = (i, px) => ({ updateDimensionProperties: { range: { sheetId, dimension: 'COLUMNS', startIndex: i, endIndex: i + 1 }, properties: { pixelSize: px }, fields: 'pixelSize' } });
+  const requests = [
+    { updateSheetProperties: { properties: { sheetId, gridProperties: { frozenRowCount: 1, frozenColumnCount: 1 } }, fields: 'gridProperties(frozenRowCount,frozenColumnCount)' } },
+    { repeatCell: { range: { sheetId, startRowIndex: 0, endRowIndex: 1 }, cell: { userEnteredFormat: { backgroundColor: rgb('1e1b4b'), horizontalAlignment: 'CENTER', verticalAlignment: 'MIDDLE', wrapStrategy: 'WRAP', textFormat: { foregroundColor: rgb('ffffff'), bold: true, fontSize: 10 } } }, fields: 'userEnteredFormat' } },
+    { updateDimensionProperties: { range: { sheetId, dimension: 'ROWS', startIndex: 0, endIndex: 1 }, properties: { pixelSize: 42 }, fields: 'pixelSize' } },
+    { setBasicFilter: { filter: { range: { sheetId, startRowIndex: 0 } } } },
+    { addConditionalFormatRule: { index: 0, rule: { ranges: [col(14)], gradientRule: { minpoint: { type: 'NUMBER', value: '40', color: rgb('f4cccc') }, midpoint: { type: 'NUMBER', value: '65', color: rgb('fff2cc') }, maxpoint: { type: 'NUMBER', value: '90', color: rgb('b7e1cd') } } } } },
+    { repeatCell: { range: col(14), cell: { userEnteredFormat: { horizontalAlignment: 'CENTER', textFormat: { bold: true } } }, fields: 'userEnteredFormat(horizontalAlignment,textFormat)' } },
+    { repeatCell: { range: col(0), cell: { userEnteredFormat: { textFormat: { bold: true } } }, fields: 'userEnteredFormat.textFormat' } },
+    { repeatCell: { range: col(15), cell: { userEnteredFormat: { wrapStrategy: 'WRAP', verticalAlignment: 'TOP' } }, fields: 'userEnteredFormat(wrapStrategy,verticalAlignment)' } },
+    { setDataValidation: { range: col(18), rule: { condition: { type: 'ONE_OF_LIST', values: ['New', 'Researching', 'Contacted', 'Applied', 'Interview', 'Offer', 'Rejected'].map((v) => ({ userEnteredValue: v })) }, showCustomUi: true } } },
+    ...[[0, 180], [5, 220], [6, 180], [7, 200], [8, 180], [9, 200], [14, 90], [15, 360], [16, 120], [18, 110]].map(([i, px]) => width(i, px)),
+  ];
+  if (!sheet.bandedRanges?.length) requests.push({ addBanding: { bandedRange: { range: { sheetId, startRowIndex: 0 }, rowProperties: { headerColor: rgb('1e1b4b'), firstBandColor: rgb('ffffff'), secondBandColor: rgb('f3f0ff') } } } });
+  const r = await http(`https://sheets.googleapis.com/v4/spreadsheets/${id}:batchUpdate`, { method: 'POST', headers: auth, body: JSON.stringify({ requests }) });
+  if (!r.ok) throw new Error(r.body?.error?.message || r.status);
+  return 'styled';
+}
+
 export function writeCsv(opps, mode) {
   const dir = path.join(ROOT, 'data', 'private');
   fs.mkdirSync(dir, { recursive: true });
@@ -50,5 +77,7 @@ export async function syncToSheets(opps, mode) {
   const values = [...(existing.body.values ? [] : [COLUMNS]), ...opps.map((o) => row(o, mode))];
   const r = await http(`https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${encodeURIComponent(tab)}!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, { method: 'POST', headers: auth, body: JSON.stringify({ values }) });
   if (!r.ok) throw new Error(`Sheets append failed: ${r.body?.error?.message || r.status}`);
-  return { sheets: true, rows: opps.length, updatedRange: r.body.updates?.updatedRange, url: `https://docs.google.com/spreadsheets/d/${id}`, csvFile: csv.file };
+  const formatted = await formatSheet(id, tab, auth).catch((e) => `formatting skipped: ${e.message}`);
+  return {
+    formatted, sheets: true, rows: opps.length, updatedRange: r.body.updates?.updatedRange, url: `https://docs.google.com/spreadsheets/d/${id}`, csvFile: csv.file };
 }

@@ -21,7 +21,9 @@
 ![Claude](https://img.shields.io/badge/Claude-intent_parser-D97757?logo=anthropic&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-![OpportunityHunter dashboard](screenshots/console.png)
+| 🖥️ Agent Console | 📗 Google Sheets output |
+|---|---|
+| ![OpportunityHunter dashboard](screenshots/console.png) | ![Google Sheets output](screenshots/google-sheets-output.png) |
 
 </div>
 
@@ -229,6 +231,15 @@ The **Health** panel shows exactly what is connected. A source counts as searche
 ---
 
 ## 📗 Google Sheets setup
+
+<div align="center">
+
+![Google Sheets output](screenshots/google-sheets-output.png)
+
+<sub><b>Sample output:</b> the exact rows and columns the Sheets sync writes, from a DEMO run (no private contacts), rendered as a preview with <code>node scripts/sheet_preview.mjs</code>. After a real sync the sheet is styled automatically: dark frozen header, filters, green/amber/red score colour scale, banded rows, wrapped “Why” column and a status dropdown.</sub>
+
+</div>
+
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/) → create a project → **enable the Google Sheets API**.
 2. **IAM & Admin → Service Accounts → Create** → Keys → Add key → JSON → save it as `credentials/service-account.json`.
