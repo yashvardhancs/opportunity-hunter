@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "setup": "npm --prefix web install && npm --prefix web run build",
+    "import:leads": "python scripts/import_leads.py",
     "start": "node server/index.mjs",
     "dev:web": "npm --prefix web run dev",
     "test": "node --test tests/reliability.test.mjs"

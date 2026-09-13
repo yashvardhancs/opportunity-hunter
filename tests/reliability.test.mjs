@@ -45,7 +45,7 @@ test('CSV export has all 21 Sheet columns and labels demo rows', async () => {
 });
 
 test('graceful degradation: every source failing still returns a result, no crash', async () => {
-  process.env.OH_FORCE_FAIL = 'web_search,google_maps,openstreetmap,github,hn_hiring,arbeitnow,remotive';
+  process.env.OH_FORCE_FAIL = 'freelancer_leads,web_search,google_maps,openstreetmap,github,hn_hiring,arbeitnow,remotive';
   const events = [];
   const i = await parseIntent(Q); planSearches(i);
   const r = await discover(i, (e, d) => events.push(d));

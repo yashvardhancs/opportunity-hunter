@@ -90,6 +90,7 @@ export async function discover(intent, emit) {
     prev.sources = [...new Set([...prev.sources, l.source])];
     prev.sourceUrls.push(l.sourceUrl);
     prev.signals = [...new Set([...prev.signals, ...l.signals])];
+    prev.people = [...(prev.people || []), ...(l.people || [])]; prev.founder ||= l.founder; prev.cto ||= l.cto; prev.recruiter ||= l.recruiter;
     prev.website ||= l.website; prev.careersUrl ||= l.careersUrl; prev.contact ||= l.contact;
     prev.sourceWeight = Math.max(prev.sourceWeight, l.sourceWeight);
   }
@@ -132,7 +133,7 @@ export function scoreCompany(c, intent) {
   if (matchedSkills.length) why.push(`Skill match: ${matchedSkills.join(', ')}`);
   const relevance = Math.min(20, 6 + matchedCats.length * 7);
   if (matchedCats.length) why.push(`Industry match: ${matchedCats.join(', ')}`);
-  const hiringHits = [/careers page/i, /vacancy|job post|hiring/i, /ats:/i].filter((re) => c.signals.some((s) => re.test(s)) || re.test(c.opportunityType || '')).length;
+  const hiringHits = [/careers page/i, /vacancy|job post|hiring|actively/i, /ats:/i].filter((re) => c.signals.some((s) => re.test(s)) || re.test(c.opportunityType || '')).length;
   const hiring = Math.min(20, hiringHits * 8);
   if (hiringHits) why.push('Hiring signal: ' + c.signals.filter((s) => /career|vacancy|hiring|ats/i.test(s)).slice(0, 2).join('; '));
   const intl = /remote|relocat|visa|english|international|worldwide/.test(hay) ? 10 : c.city?.toLowerCase().includes(intent.location.toLowerCase()) ? 5 : 2;

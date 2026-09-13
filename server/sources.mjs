@@ -1,6 +1,7 @@
 // UNCONVENTIONAL SOURCE ENGINE
 // Every source implements: { id, name, app, ecosystem, weight, configured(), search(intent) -> Lead[] }
 // A Lead is a raw company/opportunity signal with a source URL. Adding a source = adding one object here.
+import fs from 'node:fs';
 import { env, http } from './env.mjs';
 
 const strip = (s = '') => s.replace(/<[^>]+>/g, ' ').replace(/&#x2F;/g, '/').replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
@@ -176,12 +177,43 @@ const webSearch = {
   },
 };
 
+
+// ---------------- IMPORTED: freelancer lead spreadsheets (local, git-ignored) ----------------
+// Built by `npm run import:leads` → data/private/leads.json. Contact data is the user's own purchased research: verify before outreach.
+const COUNTRY_ALIASES = { 'united arab emirates': ['uae', 'dubai', 'abu dhabi'], 'united states': ['usa', 'us', 'new york', 'san francisco'], 'united kingdom': ['uk', 'london'], netherlands: ['amsterdam', 'nl'], india: ['mangalore', 'bangalore', 'bengaluru'], singapore: ['sg'] };
+const leadsFile = new URL('../data/private/leads.json', import.meta.url);
+const freelancerLeads = {
+  id: 'freelancer_leads', name: 'Freelancer lead reports (Excel)', app: 'Imported spreadsheets', ecosystem: 'Human research', weight: 9,
+  configured: () => fs.existsSync(leadsFile),
+  async search(intent) {
+    const rows = JSON.parse(fs.readFileSync(leadsFile, 'utf8'));
+    const want = [intent.location, intent.country].filter(Boolean).map((x) => x.toLowerCase());
+    for (const [k, v] of Object.entries(COUNTRY_ALIASES)) if (want.some((w) => w === k || v.includes(w))) want.push(k, ...v);
+    const clean = (x = '') => x.replace(/[\u{1F1E6}-\u{1F1FF}]/gu, '').trim();
+    const geo = rows.filter((r) => want.some((w) => clean(`${r.country || ''} ${r.city || ''}`).toLowerCase().split(/[\s,/]+/).includes(w) || clean(r.country).toLowerCase() === w));
+    const rel = (r) => [...intent.skills, ...intent.categories].filter((k) => `${r.industry} ${r.why} ${r.hiringSignal}`.toLowerCase().includes(k.toLowerCase())).length;
+    return geo.sort((a, b) => rel(b) - rel(a) || (Number(b.score) || 0) - (Number(a.score) || 0)).slice(0, 25).map((r) => {
+      const site = r.website ? (r.website.startsWith('http') ? r.website : `https://${r.website}`) : '';
+      const t = (r.contactTitle || '').toLowerCase();
+      return lead({
+        company: r.company, website: site, country: clean(r.country), city: clean(r.city || r.country), industry: r.industry || '',
+        role: 'Engineering roles (see hiring signal)', description: [r.hiringSignal, r.why].filter(Boolean).join(' — '),
+        sourceUrl: site || r.linkedin || '', opportunityType: 'Curated lead', updatedAt: new Date().toISOString(),
+        signals: [r.hiringSignal ? `Hiring signal: ${r.hiringSignal}` : null, r.discoverySource ? `Researched via ${r.discoverySource}` : null, r.score ? `Freelancer score ${r.score}` : null].filter(Boolean),
+        people: r.contactName ? [{ name: r.contactName, title: r.contactTitle || '', linkedin: r.linkedin || '', email: r.email || '' }] : [],
+        founder: /founder|ceo/.test(t) ? r.contactName : '', cto: /cto|technology|engineering/.test(t) ? r.contactName : '', recruiter: /recruit|talent|hr|people/.test(t) ? r.contactName : '',
+        contact: r.email || '', leadFiles: r.files,
+      });
+    });
+  },
+};
+
 export function matchesSkills(text, intent) {
   const t = (text || '').toLowerCase();
   return intent.skills.some((s) => t.includes(s.toLowerCase()));
 }
 
-export const LIVE_SOURCES = [webSearch, googlePlaces, osm, github, hnHiring, arbeitnow, remotive];
+export const LIVE_SOURCES = [freelancerLeads, webSearch, googlePlaces, osm, github, hnHiring, arbeitnow, remotive];
 
 // Full ecosystem registry shown in the Sources graph. `via` = which live connector covers it today.
 export const SOURCE_REGISTRY = [
@@ -212,5 +244,6 @@ export const SOURCE_REGISTRY = [
   ['Upwork', 'Upwork', 'Freelance', 'planned'],
   ['Remote_Rocketship', 'Remote Rocketship', 'Job boards', 'planned'],
   ['We_Work_Remotely', 'We Work Remotely', 'Job boards', 'planned'],
+  ['freelancer_leads', 'Freelancer lead reports (1,200+ companies)', 'Human research', 'freelancer_leads'],
   ['LinkedIn', 'LinkedIn (human-in-the-loop only)', 'People', 'manual'],
 ].map(([id, name, group, via]) => ({ id, name, group, via }));

@@ -4,7 +4,7 @@ type Opp = {
   id: string; company: string; role: string; city: string; country: string; industry: string; opportunityType: string;
   website?: string; careersUrl?: string; contact?: string; source: string; sources: string[]; sourceUrls: string[];
   signals: string[]; description?: string; score: number; priority: 'HIGH' | 'MEDIUM' | 'LOW'; why: string[];
-  breakdown: Record<string, number>; technicalFit: string; visa: string; status: string; demo?: boolean;
+  breakdown: Record<string, number>; technicalFit: string; visa: string; status: string; demo?: boolean; people?: { name: string; title: string; linkedin: string; email: string }[];
 };
 type SourceEv = { id: string; name: string; app: string; status: 'running' | 'ok' | 'failed' | 'skipped'; count?: number; ms?: number; detail?: string };
 type Health = { apps: { id: string; name: string; app: string; configured: boolean }[]; available: number; total: number; registry: { id: string; name: string; group: string; via: string }[] };
@@ -411,6 +411,11 @@ function CompanyPanel({ o, onClose }: { o: Opp; onClose: () => void }) {
           {o.contact && <li className="text-slate-300">Public contact: {o.contact}</li>}
           <li className="text-slate-400">Technical fit: {o.technicalFit} · Visa: {o.visa}</li>
         </Section>
+        {!!o.people?.length && (
+          <Section title="PEOPLE (from freelancer lead reports — verify before outreach)">
+            {o.people.map((p) => <li key={p.name + p.title} className="text-xs"><b className="text-white">{p.name}</b> · {p.title} {p.linkedin && <a className="text-sky-300 underline ml-1" href={p.linkedin} target="_blank">LinkedIn ↗</a>} {p.email && <span className="text-slate-400 ml-1">{p.email}</span>}</li>)}
+          </Section>
+        )}
         <Section title="PEOPLE (human-in-the-loop)">
           <p className="text-xs text-slate-400">Founder / CTO / Engineering lead are not auto-extracted. Open a public search and verify manually — no scraping of private data.</p>
           <a href={people} target="_blank" className="inline-block mt-2 text-xs px-3 py-2 rounded-lg bg-sky-500/15 text-sky-200">Open LinkedIn people search ↗</a>
