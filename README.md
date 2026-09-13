@@ -8,7 +8,7 @@
 *An AI agent that searches the internet's hidden opportunity graph (university career fairs, founder hiring threads, maps, open source, trading ecosystems and curated lead reports) to find jobs, clients and companies before they reach the job boards.*
 
 [![Hackathon](https://img.shields.io/badge/Multi--App_AI_Agent_Hackathon-2026-8b5cf6?style=for-the-badge)](https://multiappagenthackathon.com/)
-[![Demo](https://img.shields.io/badge/▶_Watch-2--min_demo-ef4444?style=for-the-badge)](#-demo)
+[![Demo](https://img.shields.io/badge/▶_Watch-2--min_demo-ef4444?style=for-the-badge)](https://youtu.be/1IWdeW_vMD8)
 [![Tests](https://img.shields.io/badge/reliability_tests-7%2F7_passing-10b981?style=for-the-badge)](#-reliability--evaluation)
 
 ![Node](https://img.shields.io/badge/Node-%E2%89%A518-339933?logo=nodedotjs&logoColor=white)
@@ -24,6 +24,8 @@
 | 🖥️ Agent Console | 📗 Google Sheets output |
 |---|---|
 | ![OpportunityHunter dashboard](screenshots/console.png) | ![Google Sheets output](screenshots/google-sheets-output.png) |
+
+[![Watch the demo](https://img.shields.io/badge/▶_WATCH_THE_DEMO-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/1IWdeW_vMD8)
 
 </div>
 
@@ -58,6 +60,14 @@ The agent then:
 | 6 | 📊 **Score** | Scores 0–100 in 7 parts, with a written *why* and source links |
 | 7 | 📤 **Deliver** | Dashboard, **Google Sheets**, CSV |
 
+### 📸 Screenshots
+
+| 🧠 Live agent trace: search plan and sources | 🏆 Ranked opportunities with scores |
+|---|---|
+| ![Agent trace](screenshots/agent-trace.png) | ![Opportunities](screenshots/opportunities.png) |
+| 🌐 **Source ecosystem graph** | 📗 **Google Sheets output** |
+| ![Source graph](screenshots/source-graph.png) | ![Google Sheets](screenshots/google-sheets-output.png) |
+
 ### Dashboard tabs
 | Tab | Shows |
 |---|---|
@@ -72,7 +82,13 @@ The agent then:
 
 ## 🎬 Demo
 
-> ▶ **Demo video (≤ 2 min):** _add your YouTube/Loom link here_
+<div align="center">
+
+[![Watch the OpportunityHunter demo](https://img.youtube.com/vi/1IWdeW_vMD8/maxresdefault.jpg)](https://youtu.be/1IWdeW_vMD8)
+
+**▶ [Watch the 2-minute demo on YouTube](https://youtu.be/1IWdeW_vMD8)**
+
+</div>
 
 | Time | What to show |
 |---|---|
@@ -96,8 +112,8 @@ The agent then:
 
 ### 1. Install and build
 ```bash
-git clone https://github.com/<your-username>/opportunityhunter.git
-cd opportunityhunter
+git clone https://github.com/yashvardhancs/opportunity-hunter.git
+cd opportunity-hunter
 npm run setup            # installs dashboard dependencies and builds it
 ```
 
