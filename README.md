@@ -173,6 +173,7 @@ OH_OFFLINE=1 npm test    # offline only
 | 14 | 🇦🇪 **DMCC directory (Dubai)** | Web search on `site:dmcc.ae` + DMCC Crypto Centre searches (added automatically for Dubai/UAE requests); DMCC Excel exports via `import:leads` | DMCC-registered companies by category | 🔑 search key / ✅ import |
 | 15 | 🏛️ **Other business registries** (Singapore data.gov.sg, Companies House, KvK) | Official data or APIs | Registered companies by city | 🗓️ Roadmap |
 | 16 | 👤 **People** | Lead reports and public pages; LinkedIn search opens **in your browser** | Founder, CTO, recruiter | ✅ Human in the loop |
+| 17 | 🧩 **LinkedIn contact extensions** (Apollo, Lusha, ContactOut, Kaspr, Hunter) | **You** run them in your own browser on your own account, then import the export | Work email / phone of decision-makers | 🧑‍💻 Manual step · [how it works](#-linkedin--contact-enrichment-extensions-human-in-the-loop) |
 
 Sources are pluggable: add one object to `LIVE_SOURCES` in [`server/sources.mjs`](server/sources.mjs) (`{ id, app, weight, configured(), search(intent) }`).
 
@@ -291,6 +292,35 @@ The **Health** panel shows exactly what is connected. A source counts as searche
 
 ---
 
+## 🧩 LinkedIn / contact-enrichment extensions (human-in-the-loop)
+
+Contact-enrichment browser extensions such as **Apollo.io, Lusha, ContactOut, Kaspr, SignalHire and Hunter** show a person's work email or phone on their LinkedIn profile or company page. OpportunityHunter **does not automate them**. It fits them into a manual workflow that you control:
+
+```text
+ AGENT                          YOU (in your browser)                      AGENT
+ ─────                          ─────────────────────                      ─────
+ Finds + scores company  ──▶  Click "Open LinkedIn people search"   ──▶  npm run import:leads
+ (Company Intelligence)        Pick founder / CTO / recruiter             merges contacts into
+                               Reveal contact with YOUR extension         the company, re-scores,
+                               Export to CSV/Excel (Company column)       syncs to Google Sheets
+```
+
+| Step | Where | What |
+|---|---|---|
+| 1 | Dashboard → click a company | **Open LinkedIn people search** (founder / CTO / engineering manager / recruiter) |
+| 2 | Your browser | Use an enrichment extension you have **signed up for yourself**, within its limits and terms |
+| 3 | The extension | Export the contacts to `.csv` / `.xlsx` (keep a `Company` column) |
+| 4 | Terminal | `npm run import:leads -- "<folder with exports>"`: the importer finds the header row, maps name / title / LinkedIn / email, and deduplicates |
+| 5 | Dashboard | Contacts appear under **People** in Company Intelligence and fill the Founder / CTO / Recruiter columns in Google Sheets |
+
+**Rules this project follows:**
+- ❌ No automated LinkedIn scraping, headless LinkedIn sessions, fake human browsing, or CAPTCHA / rate-limit bypass.
+- ❌ No collecting hidden or private personal data. Work contacts only, for relevant professional outreach.
+- ✅ A person reviews every contact before it is used. Imported contact files stay in `data/private/` (git-ignored).
+- ✅ You follow each tool's terms plus GDPR / CAN-SPAM: honour opt-outs and don't send bulk spam.
+
+**Roadmap:** official enrichment APIs (Apollo / Hunter / Lusha) behind an explicit `ENRICHMENT_API_KEY`, used only for companies you shortlist in the dashboard, with a "Reveal contact" button and credit usage shown.
+
 ## 🔒 Privacy & responsible use
 - 🚫 No CAPTCHA bypass, no disguising the tool as a human visitor, no logging in to scrape, no hidden-field extraction.
 - 🔐 Imported lead data (names, emails, LinkedIn URLs) stays in `data/private/`, which is **git-ignored**. Secrets live in `.env` / `credentials/`.
@@ -308,6 +338,7 @@ The **Health** panel shows exactly what is connected. A source counts as searche
 - [ ] Official business-registry connectors (Singapore data.gov.sg, UK Companies House, OpenCorporates) and a directory connector that checks each site's terms
 - [ ] Company-name extraction from career-fair PDFs
 - [ ] Greenhouse / Lever / Ashby job-list APIs
+- [ ] Official enrichment APIs (Apollo / Hunter / Lusha) for shortlisted companies, with a human-approved \"Reveal contact\" button
 - [ ] Outreach drafts for review, scheduled hunts, alerts for new HIGH opportunities
 
 ---
