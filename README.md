@@ -338,7 +338,7 @@ Contact-enrichment browser extensions such as **Apollo.io, Lusha, ContactOut, Ka
 - [ ] Official business-registry connectors (Singapore data.gov.sg, UK Companies House, OpenCorporates) and a directory connector that checks each site's terms
 - [ ] Company-name extraction from career-fair PDFs
 - [ ] Greenhouse / Lever / Ashby job-list APIs
-- [ ] Official enrichment APIs (Apollo / Hunter / Lusha) for shortlisted companies, with a human-approved \"Reveal contact\" button
+- [ ] Official enrichment APIs (Apollo / Hunter / Lusha) for shortlisted companies, with a human-approved "Reveal contact" button
 - [ ] Outreach drafts for review, scheduled hunts, alerts for new HIGH opportunities
 
 ---
